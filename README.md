@@ -47,3 +47,5 @@ On Ubuntu
 cp */dotfiles/tmux/tmux.conf ~/.tmux.conf
 ```
 
+# Display
+![effect map](./misc/effect_map.png)
