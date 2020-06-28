@@ -47,5 +47,20 @@ On Ubuntu
 cp */dotfiles/tmux/tmux.conf ~/.tmux.conf
 ```
 
+### Vim
+* Install vim-plug(Vim plugin manager)
+```
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+* Config .vimrc
+```
+cp */dotfiles/vim/vimrc ~/.vimrc
+```
+* Install plugin
+```
+:PlugInstall
+```
+
 # Display
 ![effect map](./misc/effect_map.png)

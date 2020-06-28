@@ -1,4 +1,16 @@
 " @Charles's vimrc file
 " https://github.com/xindzju/dotfiles/vim/vimrc
 
+" Specify a directory for plugins
+call plug#begin('~/.vim/bundle')
+
+" Make sure you use single quotes
+Plug 'tpope/vim-fugitive'
+Plug 'vim-syntastic/syntastic'
+Plug 'preservim/nerdtree'
+Plug 'kien/ctrlp.vim'
+
+" Initialize plugin system
+call plug#end()
+
 
