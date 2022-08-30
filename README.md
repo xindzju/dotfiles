@@ -4,8 +4,8 @@ Personal dotfiles for Linux.
 # Installation
 ## Automatic
 ```
-To be continued...
-#curl https://github.com/xindzju/dotfiles/install.sh | bash
+cd dotfiles
+./install.sh
 ```
 
 ## Manually
