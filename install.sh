@@ -41,3 +41,7 @@ zsh
 # enable all the settings
 echo "=======================================>Enable all the settings..."
 source ~/.zshrc
+
+sudo apt upgrade -y
+sudo apt update
+sudo apt install git-lfs -y
