@@ -36,6 +36,8 @@ chmod 777 ./install.py
 python3 ./install.py
 cd ..
 
+zsh
+
 # enable all the settings
 echo "=======================================>Enable all the settings..."
 source ~/.zshrc
