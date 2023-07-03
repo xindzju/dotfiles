@@ -6,6 +6,10 @@ sudo apt install python3 python-is-python3 -y
 echo "=======================================>Install wget git..."
 sudo apt install wget git -y
 
+# install git-lfs
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt install git-lfs
+
 # install zsh
 echo "=======================================>Install zsh..."
 sudo apt install zsh -y 
