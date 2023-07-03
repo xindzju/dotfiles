@@ -38,6 +38,9 @@ cd ..
 
 zsh
 
+# overwrite default .zshrc
+cp ./zsh/zshrc ~/.zshrc
+
 # enable all the settings
 echo "=======================================>Enable all the settings..."
 source ~/.zshrc
