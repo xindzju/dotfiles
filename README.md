@@ -44,7 +44,10 @@ source ~/.zshrc
 ### Tmux
 On Ubuntu
 ```
+mkdir ~/.tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cp */dotfiles/tmux/tmux.conf ~/.tmux.conf
+tmux source ~/.tmux.conf
 ```
 
 ### Vim

@@ -52,3 +52,10 @@ source ~/.zshrc
 sudo apt upgrade -y
 sudo apt update
 sudo apt install git-lfs -y
+
+# install tmux
+sudo apt install tmux -y
+mkdir ~/.tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+cp ./tmux/tmux.conf ~/.tmux.conf
+tmux source ~/.tmux.conf
