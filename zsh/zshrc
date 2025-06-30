@@ -75,13 +75,32 @@ plugins=(
     extract
     )
 
-
-source $ZSH/oh-my-zsh.sh
+# Source oh-my-zsh only if it exists
+if [[ -f $ZSH/oh-my-zsh.sh ]]; then
+    source $ZSH/oh-my-zsh.sh
+else
+    echo "Warning: oh-my-zsh not found at $ZSH/oh-my-zsh.sh"
+fi
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-export PATH="$HOME/anaconda3/bin:$PATH"
+
+# Add common user bin directories to PATH if they exist
+if [[ -d "$HOME/bin" ]]; then
+    export PATH="$HOME/bin:$PATH"
+fi
+
+if [[ -d "$HOME/.local/bin" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# Root user specific configurations
+if [[ $EUID -eq 0 ]]; then
+    # Root user prompt customization (optional)
+    # You can customize the prompt for root user here
+    export PROMPT_COMMAND='echo -ne "\033]0;ROOT - ${USER}@${HOSTNAME}: ${PWD}\007"'
+fi
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -105,9 +124,24 @@ export PATH="$HOME/anaconda3/bin:$PATH"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-. ~/.autojump/etc/profile.d/autojump.sh
+# Source autojump if available
+if [[ -f ~/.autojump/etc/profile.d/autojump.sh ]]; then
+    . ~/.autojump/etc/profile.d/autojump.sh
+elif [[ -f /usr/share/autojump/autojump.sh ]]; then
+    # System-wide autojump installation
+    . /usr/share/autojump/autojump.sh
+elif [[ -f /etc/profile.d/autojump.sh ]]; then
+    # Another common system location
+    . /etc/profile.d/autojump.sh
+fi
 
-#local config, define alias, etc.
-if [ -f ~/.shellrc ]; then
+# Source local config, define alias, etc.
+# This should be last to allow overriding any previous settings
+if [[ -f ~/.shellrc ]]; then
     . ~/.shellrc
+fi
+
+# Source local zsh-specific config if it exists
+if [[ -f ~/.zshrc.local ]]; then
+    . ~/.zshrc.local
 fi
