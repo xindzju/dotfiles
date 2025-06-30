@@ -1,79 +1,89 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+#===============================================================================
+# ZSH CONFIGURATION FILE
+#===============================================================================
+# This file configures the Zsh shell with oh-my-zsh framework
+# It includes theme settings, plugins, custom paths, and various enhancements
+#===============================================================================
 
-# Path to your oh-my-zsh installation.
+#===============================================================================
+# OH-MY-ZSH BASIC CONFIGURATION
+#===============================================================================
+
+# Set the path to oh-my-zsh installation
 export ZSH=$HOME/.oh-my-zsh
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+# Choose your theme
+# Popular themes: "robbyrussell", "agnoster", "powerlevel9k", "ys", "af-magic"
+# Use "random" to load a random theme each time
 ZSH_THEME="ys"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+# Theme randomization (uncomment if using random theme)
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" "ys" "af-magic" )
 
-# Uncomment the following line to use case-sensitive completion.
+#===============================================================================
+# ZSH BEHAVIOR SETTINGS
+#===============================================================================
+
+# Enable case-sensitive completion
 CASE_SENSITIVE="true"
 
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
+# Uncomment to use hyphen-insensitive completion (_ and - are interchangeable)
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
+# Uncomment to disable bi-weekly auto-update checks
 # DISABLE_AUTO_UPDATE="true"
 
-# Uncomment the following line to automatically update without prompting.
+# Uncomment to automatically update without prompting
 # DISABLE_UPDATE_PROMPT="true"
 
-# Uncomment the following line to change how often to auto-update (in days).
+# Change how often to auto-update (in days)
 # export UPDATE_ZSH_DAYS=13
 
-# Uncomment the following line if pasting URLs and other text is messed up.
+# Uncomment if pasting URLs and other text is messed up
 # DISABLE_MAGIC_FUNCTIONS=true
 
-# Uncomment the following line to disable colors in ls.
+# Uncomment to disable colors in ls command
 # DISABLE_LS_COLORS="true"
 
-# Uncomment the following line to disable auto-setting terminal title.
+# Uncomment to disable auto-setting terminal title
 # DISABLE_AUTO_TITLE="true"
 
-# Uncomment the following line to enable command auto-correction.
+# Uncomment to enable command auto-correction
 # ENABLE_CORRECTION="true"
 
-# Uncomment the following line to display red dots whilst waiting for completion.
+# Uncomment to display red dots while waiting for completion
 # COMPLETION_WAITING_DOTS="true"
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
+# Speed up repository status check for large repositories
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
+# Customize history timestamp format
+# Options: "mm/dd/yyyy" | "dd.mm.yyyy" | "yyyy-mm-dd" | custom strftime format
 # HIST_STAMPS="mm/dd/yyyy"
 
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
+#===============================================================================
+# PLUGINS CONFIGURATION
+#===============================================================================
 
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
+# Load oh-my-zsh plugins
+# Standard plugins are in $ZSH/plugins/
+# Custom plugins go in $ZSH_CUSTOM/plugins/
+# 
+# Active plugins:
+# - git: Git shortcuts and information
+# - zsh-syntax-highlighting: Syntax highlighting for commands
+# - zsh-autosuggestions: Command suggestions based on history
+# - extract: Universal archive extractor
 plugins=(
     git
     zsh-syntax-highlighting
     zsh-autosuggestions
     extract
-    )
+)
+
+#===============================================================================
+# LOAD OH-MY-ZSH FRAMEWORK
+#===============================================================================
 
 # Source oh-my-zsh only if it exists
 if [[ -f $ZSH/oh-my-zsh.sh ]]; then
@@ -82,11 +92,11 @@ else
     echo "Warning: oh-my-zsh not found at $ZSH/oh-my-zsh.sh"
 fi
 
-# User configuration
+#===============================================================================
+# CUSTOM PATH CONFIGURATION
+#===============================================================================
 
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# Add common user bin directories to PATH if they exist
+# Add user binary directories to PATH if they exist
 if [[ -d "$HOME/bin" ]]; then
     export PATH="$HOME/bin:$PATH"
 fi
@@ -95,53 +105,112 @@ if [[ -d "$HOME/.local/bin" ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Root user specific configurations
+# Uncomment to add custom paths
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+#===============================================================================
+# USER-SPECIFIC CONFIGURATIONS
+#===============================================================================
+
+# Root user specific settings
 if [[ $EUID -eq 0 ]]; then
-    # Root user prompt customization (optional)
-    # You can customize the prompt for root user here
+    # Customize root user prompt (security reminder)
     export PROMPT_COMMAND='echo -ne "\033]0;ROOT - ${USER}@${HOSTNAME}: ${PWD}\007"'
+    echo "⚠️  You are running as ROOT user. Be careful!"
 fi
 
-# You may need to manually set your language environment
+# Language environment (uncomment if needed)
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
+# Manual path for man pages (uncomment if needed)
+# export MANPATH="/usr/local/man:$MANPATH"
+
+#===============================================================================
+# EDITOR PREFERENCES
+#===============================================================================
+
+# Set preferred editor for different contexts
+# Uncomment and modify as needed
 # if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
+#   export EDITOR='vim'     # Use vim for remote sessions
 # else
-#   export EDITOR='mvim'
+#   export EDITOR='code'    # Use VS Code for local sessions
 # fi
 
-# Compilation flags
+#===============================================================================
+# COMPILATION FLAGS
+#===============================================================================
+
+# Uncomment if you need specific compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+#===============================================================================
+# EXTERNAL TOOL INTEGRATIONS
+#===============================================================================
 
-# Source autojump if available
+# Load Autojump for quick directory navigation
+# Autojump learns your most used directories and allows quick jumping
 if [[ -f ~/.autojump/etc/profile.d/autojump.sh ]]; then
+    # User installation
     . ~/.autojump/etc/profile.d/autojump.sh
 elif [[ -f /usr/share/autojump/autojump.sh ]]; then
-    # System-wide autojump installation
+    # System-wide installation (Ubuntu/Debian)
     . /usr/share/autojump/autojump.sh
 elif [[ -f /etc/profile.d/autojump.sh ]]; then
-    # Another common system location
+    # Alternative system location
     . /etc/profile.d/autojump.sh
 fi
 
-# Source local config, define alias, etc.
-# This should be last to allow overriding any previous settings
+#===============================================================================
+# CUSTOM ALIASES AND FUNCTIONS
+#===============================================================================
+
+# This section is for your personal aliases and functions
+# Examples:
+# alias ll='ls -la'
+# alias la='ls -A'
+# alias l='ls -CF'
+# alias grep='grep --color=auto'
+# alias zshconfig="$EDITOR ~/.zshrc"
+# alias ohmyzsh="$EDITOR ~/.oh-my-zsh"
+
+# Custom function examples:
+# mkcd() { mkdir -p "$1" && cd "$1"; }  # Create directory and cd into it
+# extract() { ... }  # Universal extractor (provided by extract plugin)
+
+#===============================================================================
+# LOCAL CONFIGURATION FILES
+#===============================================================================
+
+# Load shell-agnostic configuration (shared with bash)
+# This file should contain aliases, functions, and settings that work in both zsh and bash
 if [[ -f ~/.shellrc ]]; then
-    . ~/.shellrc
+    source ~/.shellrc
 fi
 
-# Source local zsh-specific config if it exists
+# Load zsh-specific local configuration
+# This file is for user-specific zsh settings that shouldn't be in version control
 if [[ -f ~/.zshrc.local ]]; then
-    . ~/.zshrc.local
+    source ~/.zshrc.local
 fi
+
+#===============================================================================
+# FINAL NOTES
+#===============================================================================
+# 
+# This configuration provides:
+# ✓ Modern zsh experience with oh-my-zsh
+# ✓ Syntax highlighting and autosuggestions
+# ✓ Git integration and shortcuts
+# ✓ Archive extraction utilities
+# ✓ Autojump for quick navigation
+# ✓ Proper PATH management
+# ✓ Local configuration support
+#
+# To customize further:
+# 1. Edit ~/.zshrc.local for personal settings
+# 2. Edit ~/.shellrc for shell-agnostic settings
+# 3. Explore oh-my-zsh themes and plugins
+# 4. Add your own aliases and functions above
+#
+#===============================================================================
