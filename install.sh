@@ -39,20 +39,33 @@ print_error() {
     echo -e "${RED}ERROR: $1${NC}"
 }
 
-# Detect if running as root and set up sudo handling
-setup_sudo() {
+# Check if we can obtain root privileges (root user or sudo available)
+HAS_ROOT=false
+
+detect_privileges() {
     if [ "$EUID" -eq 0 ]; then
+        HAS_ROOT=true
         SUDO=""
         print_status "Running as root user"
-    else
+    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+        HAS_ROOT=true
         SUDO="sudo"
-        print_status "Running as non-root user"
+        print_status "Running as non-root user (sudo available)"
+    else
+        HAS_ROOT=false
+        SUDO=""
+        print_warning "No root/sudo privileges available"
+        print_warning "Privileged operations (apt install, chsh) will be SKIPPED"
+        print_warning "User-space tools (oh-my-zsh, plugins, autojump, configs) will still be installed"
     fi
 }
 
 # Function to run command with or without sudo based on user context
 run_cmd() {
-    if [ "$EUID" -eq 0 ]; then
+    if [ "$HAS_ROOT" = false ]; then
+        print_warning "Skipping privileged command: $*"
+        return 0
+    elif [ "$EUID" -eq 0 ]; then
         "$@"
     else
         sudo "$@"
@@ -62,7 +75,7 @@ run_cmd() {
 # Fix file ownership for non-root users
 fix_ownership() {
     local file_path="$1"
-    if [ "$EUID" -ne 0 ] && [ -e "$file_path" ]; then
+    if [ "$EUID" -ne 0 ] && [ "$HAS_ROOT" = true ] && [ -e "$file_path" ]; then
         sudo chown -R $USER:$USER "$file_path" 2>/dev/null || true
     fi
 }
@@ -73,6 +86,12 @@ fix_ownership() {
 
 install_system_packages() {
     print_status "Installing system packages"
+
+    if [ "$HAS_ROOT" = false ]; then
+        print_warning "Skipping system package installation (no root privileges)"
+        echo "Please ensure the following are already installed: python3, wget, git, zsh, tmux"
+        return 0
+    fi
     
     # Update package lists first
     run_cmd apt update
@@ -93,17 +112,39 @@ install_system_packages() {
 
 install_zsh() {
     print_status "Setting up Zsh shell"
-    
-    # Install zsh
-    echo "Installing zsh..."
-    run_cmd apt install zsh -y
-    
-    # Change default shell to zsh
-    echo "Changing default shell to zsh..."
-    if [ "$EUID" -eq 0 ]; then
-        chsh -s /usr/bin/zsh
+
+    # Check if zsh is already available
+    if command -v zsh &>/dev/null; then
+        echo "Zsh is already installed at: $(command -v zsh)"
+    elif [ "$HAS_ROOT" = true ]; then
+        echo "Installing zsh..."
+        run_cmd apt install zsh -y
     else
-        sudo chsh -s /usr/bin/zsh $USER
+        print_warning "Zsh is not installed and cannot be installed without root privileges"
+        print_warning "Skipping zsh setup. Please ask your admin to install zsh."
+        return 0
+    fi
+    
+    # Change default shell to zsh (requires root/sudo)
+    if [ "$HAS_ROOT" = true ]; then
+        echo "Changing default shell to zsh..."
+        if [ "$EUID" -eq 0 ]; then
+            chsh -s "$(command -v zsh)"
+        else
+            sudo chsh -s "$(command -v zsh)" "$USER"
+        fi
+    else
+        print_warning "Cannot change default shell without root privileges"
+        echo "To use zsh, you can:"
+        echo "  - Run 'zsh' manually to start a zsh session"
+        echo "  - Add 'exec zsh' to your ~/.bashrc to auto-switch"
+        # Auto-add exec zsh to .bashrc if not already present
+        if [ -f "$HOME/.bashrc" ] && ! grep -q 'exec zsh' "$HOME/.bashrc"; then
+            echo "Adding 'exec zsh' to ~/.bashrc for auto-switch..."
+            echo '' >> "$HOME/.bashrc"
+            echo '# Auto-switch to zsh (added by dotfiles installer)' >> "$HOME/.bashrc"
+            echo 'if command -v zsh &>/dev/null; then exec zsh; fi' >> "$HOME/.bashrc"
+        fi
     fi
     
     echo "Current shell: $SHELL"
@@ -111,6 +152,12 @@ install_zsh() {
 
 install_oh_my_zsh() {
     print_status "Installing Oh My Zsh framework"
+
+    # oh-my-zsh requires zsh to be installed
+    if ! command -v zsh &>/dev/null; then
+        print_warning "Zsh is not available - skipping oh-my-zsh installation"
+        return 0
+    fi
     
     # Remove existing oh-my-zsh installation if it exists
     if [[ -d "$HOME/.oh-my-zsh" ]]; then
@@ -140,6 +187,12 @@ install_oh_my_zsh() {
 
 install_zsh_plugins() {
     print_status "Installing Zsh plugins"
+
+    # Skip if oh-my-zsh is not installed
+    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+        print_warning "oh-my-zsh not found - skipping plugin installation"
+        return 0
+    fi
     
     local plugin_dir="${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins"
     
@@ -167,6 +220,12 @@ install_zsh_plugins() {
 
 install_autojump() {
     print_status "Installing Autojump"
+
+    # Autojump requires python3
+    if ! command -v python3 &>/dev/null; then
+        print_warning "python3 is not available - skipping autojump installation"
+        return 0
+    fi
     
     # Remove existing autojump installation if it exists
     if [[ -d "$HOME/.autojump" ]]; then
@@ -213,10 +272,18 @@ apply_zsh_configuration() {
 
 install_tmux() {
     print_status "Setting up Tmux"
-    
-    # Install tmux
-    echo "Installing tmux..."
-    run_cmd apt install tmux -y
+
+    # Check if tmux is already available
+    if command -v tmux &>/dev/null; then
+        echo "Tmux is already installed at: $(command -v tmux)"
+    elif [ "$HAS_ROOT" = true ]; then
+        echo "Installing tmux..."
+        run_cmd apt install tmux -y
+    else
+        print_warning "Tmux is not installed and cannot be installed without root privileges"
+        print_warning "Skipping tmux setup. Please ask your admin to install tmux."
+        return 0
+    fi
     
     # Remove existing TPM installation if it exists
     if [[ -d "$HOME/.tmux/plugins/tpm" ]]; then
@@ -247,6 +314,11 @@ install_tmux() {
 
 perform_system_upgrade() {
     print_status "Updating system packages"
+
+    if [ "$HAS_ROOT" = false ]; then
+        print_warning "Skipping system package upgrade (no root privileges)"
+        return 0
+    fi
     
     echo "Updating package lists..."
     run_cmd apt update
@@ -264,8 +336,8 @@ main() {
     echo "This script will set up a complete development environment."
     echo ""
     
-    # Setup sudo handling
-    setup_sudo
+    # Detect available privileges
+    detect_privileges
     
     # Run installation steps
     install_system_packages
@@ -295,9 +367,13 @@ main() {
     echo "  3. Some changes may require a full logout/login to take effect"
     echo ""
     
-    # Switch to zsh shell
-    print_status "Switching to Zsh shell"
-    exec zsh
+    # Switch to zsh shell if available
+    if command -v zsh &>/dev/null; then
+        print_status "Switching to Zsh shell"
+        exec zsh
+    else
+        print_warning "Zsh not available - staying in current shell"
+    fi
 }
 
 # Run the main installation process
